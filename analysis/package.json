@@ -1,0 +1,24 @@
+{
+  "name": "analysis",
+  "version": "1.0.0",
+  "description": "AI-Based Code Quality Auditor - Static Analysis Engine",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "ast",
+    "static-analysis",
+    "code-quality"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@babel/parser": "^7.23.6",
+    "@babel/traverse": "^7.23.6",
+    "esprima": "^4.0.1",
+    "acorn": "^8.11.3",
+    "escomplex": "^2.0.0-alpha"
+  }
+}
