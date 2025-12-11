@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import axios from 'axios';
+import { useAuth } from '../../context/AuthContext';
 import {
     Loader2,
     ArrowLeft,
@@ -13,7 +15,9 @@ import {
     File,
     Plus,
     Code2,
-    ExternalLink
+    ExternalLink,
+    User,
+    LogOut
 } from 'lucide-react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
@@ -23,6 +27,7 @@ export default function ProjectsPage() {
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('all');
+    const { user, isAuthenticated, logout, getAuthHeaders } = useAuth();
 
     useEffect(() => {
         fetchProjects();
@@ -30,7 +35,9 @@ export default function ProjectsPage() {
 
     const fetchProjects = async () => {
         try {
-            const response = await axios.get(`${API_URL}/projects`);
+            const response = await axios.get(`${API_URL}/projects`, {
+                headers: getAuthHeaders()
+            });
             setProjects(response.data.projects || []);
             setLoading(false);
         } catch (error) {
@@ -43,7 +50,9 @@ export default function ProjectsPage() {
         if (!confirm('Are you sure you want to delete this project?')) return;
 
         try {
-            await axios.delete(`${API_URL}/projects/${projectId}`);
+            await axios.delete(`${API_URL}/projects/${projectId}`, {
+                headers: getAuthHeaders()
+            });
             setProjects(projects.filter(p => p._id !== projectId));
         } catch (error) {
             console.error('Error deleting project:', error);
@@ -126,8 +135,8 @@ export default function ProjectsPage() {
                             key={tab.id}
                             onClick={() => setFilter(tab.id)}
                             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${filter === tab.id
-                                    ? 'bg-blue-600 text-white'
-                                    : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
                                 }`}
                         >
                             {tab.label} ({tab.count})

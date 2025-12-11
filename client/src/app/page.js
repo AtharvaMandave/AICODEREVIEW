@@ -2,7 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import UploadZone from '../components/UploadZone';
+import { useAuth } from '../context/AuthContext';
 import {
   Sparkles,
   Shield,
@@ -12,12 +14,15 @@ import {
   GitBranch,
   ArrowRight,
   Code2,
-  Check
+  Check,
+  User,
+  LogOut
 } from 'lucide-react';
 
 export default function Home() {
   const router = useRouter();
   const [isUploading, setIsUploading] = useState(false);
+  const { user, isAuthenticated, logout } = useAuth();
 
   const handleUploadSuccess = (projectId) => {
     router.push(`/project/${projectId}`);
@@ -47,15 +52,36 @@ export default function Home() {
             >
               Projects
             </button>
-            <a
-              href="https://github.com/AtharvaMandave"
-              target="_blank"
-              rel="noreferrer"
-              className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 rounded-lg transition-colors flex items-center gap-2"
-            >
-              <GitBranch className="w-4 h-4" />
-              GitHub
-            </a>
+
+            {isAuthenticated ? (
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-lg">
+                  <div className="w-7 h-7 bg-blue-600 rounded-full flex items-center justify-center">
+                    <span className="text-white text-sm font-medium">
+                      {user?.name?.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <span className="text-sm font-medium text-slate-700 hidden sm:block">
+                    {user?.name}
+                  </span>
+                </div>
+                <button
+                  onClick={logout}
+                  className="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                  title="Sign Out"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors flex items-center gap-2"
+              >
+                <User className="w-4 h-4" />
+                Sign In
+              </Link>
+            )}
           </div>
         </div>
       </nav>

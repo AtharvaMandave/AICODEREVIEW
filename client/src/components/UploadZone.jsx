@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
 import {
     FileText,
     Package,
@@ -21,6 +22,7 @@ export default function UploadZone({ onUploadSuccess, isUploading, setIsUploadin
     const [projectName, setProjectName] = useState('');
     const [uploadProgress, setUploadProgress] = useState(0);
     const [error, setError] = useState('');
+    const { getAuthHeaders } = useAuth();
 
     const onDrop = useCallback(async (acceptedFiles) => {
         if (acceptedFiles.length === 0) return;
@@ -38,7 +40,10 @@ export default function UploadZone({ onUploadSuccess, isUploading, setIsUploadin
             const endpoint = uploadMode === 'zip' ? '/upload/zip' : '/upload/file';
 
             const response = await axios.post(`${API_URL}${endpoint}`, formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    ...getAuthHeaders()
+                },
                 onUploadProgress: (progressEvent) => {
                     const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
                     setUploadProgress(progress);
@@ -52,7 +57,7 @@ export default function UploadZone({ onUploadSuccess, isUploading, setIsUploadin
             setError(err.response?.data?.error || 'Upload failed. Please try again.');
             setIsUploading(false);
         }
-    }, [uploadMode, projectName, setIsUploading, onUploadSuccess]);
+    }, [uploadMode, projectName, setIsUploading, onUploadSuccess, getAuthHeaders]);
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
@@ -82,6 +87,8 @@ export default function UploadZone({ onUploadSuccess, isUploading, setIsUploadin
             const response = await axios.post(`${API_URL}/upload/github`, {
                 githubUrl,
                 name: projectName
+            }, {
+                headers: getAuthHeaders()
             });
 
             setUploadProgress(100);
@@ -113,8 +120,8 @@ export default function UploadZone({ onUploadSuccess, isUploading, setIsUploadin
                             onClick={() => setUploadMode(tab.id)}
                             disabled={isUploading}
                             className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-all flex items-center justify-center gap-2 ${uploadMode === tab.id
-                                    ? 'bg-white text-slate-900 shadow-sm'
-                                    : 'text-slate-500 hover:text-slate-700'
+                                ? 'bg-white text-slate-900 shadow-sm'
+                                : 'text-slate-500 hover:text-slate-700'
                                 }`}
                         >
                             <tab.icon className="w-4 h-4" />
@@ -180,8 +187,8 @@ export default function UploadZone({ onUploadSuccess, isUploading, setIsUploadin
                         <div
                             {...getRootProps()}
                             className={`border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all ${isDragActive
-                                    ? 'border-blue-500 bg-blue-50'
-                                    : 'border-slate-300 hover:border-blue-400 hover:bg-slate-50'
+                                ? 'border-blue-500 bg-blue-50'
+                                : 'border-slate-300 hover:border-blue-400 hover:bg-slate-50'
                                 } ${isUploading ? 'opacity-60 cursor-not-allowed' : ''}`}
                         >
                             <input {...getInputProps()} />
