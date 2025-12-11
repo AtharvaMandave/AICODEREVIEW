@@ -32,6 +32,7 @@ export const uploadFile = async (req, res, next) => {
 
         // Create project
         const project = new Project({
+            userId: req.user ? req.user._id : null,
             name: name || req.file.originalname,
             description: description || '',
             sourceType: 'file',
@@ -97,6 +98,7 @@ export const uploadZip = async (req, res, next) => {
 
         // Create project
         const project = new Project({
+            userId: req.user ? req.user._id : null,
             name: name || req.file.originalname.replace('.zip', ''),
             description: description || '',
             sourceType: 'zip',
@@ -179,6 +181,7 @@ export const uploadGithub = async (req, res, next) => {
 
         // Create project
         const project = new Project({
+            userId: req.user ? req.user._id : null,
             name: name || repoName,
             description: description || '',
             sourceType: 'github',

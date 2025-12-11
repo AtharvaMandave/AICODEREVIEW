@@ -6,11 +6,22 @@ import { cleanupDirectory, readDirectoryRecursive } from '../services/file-reade
 import { logger } from '../utils/logger.js';
 
 /**
- * Get all projects
+ * Get all projects (filtered by user if authenticated)
  */
 export const getAllProjects = async (req, res, next) => {
     try {
-        const projects = await Project.find()
+        // Build query based on authentication
+        const query = {};
+
+        if (req.user) {
+            // Authenticated user: show only their projects
+            query.userId = req.user._id;
+        } else {
+            // Guest/anonymous: show only guest projects (null userId)
+            query.userId = null;
+        }
+
+        const projects = await Project.find(query)
             .sort({ createdAt: -1 })
             .select('-uploadPath');
 

@@ -5,6 +5,8 @@ import { checkNaming } from '../rules/naming.js';
 import { checkDebugCode } from '../rules/debugCode.js';
 import { checkMagicNumbers } from '../rules/magicNumbers.js';
 import { checkErrorHandling } from '../rules/errorHandling.js';
+import { checkSecurity, checkInsecurePatterns } from '../rules/security.js';
+import { checkBestPractices, checkTodoComments, checkPerformance } from '../rules/bestPractices.js';
 
 /**
  * Run static analysis on a single file
@@ -81,6 +83,15 @@ const analyzeJavaScript = (filePath, code) => {
 
         // Error handling
         allIssues.push(...checkErrorHandling(ast, code));
+
+        // Security analysis
+        allIssues.push(...checkSecurity(ast, code));
+        allIssues.push(...checkInsecurePatterns(ast, code));
+
+        // Best practices
+        allIssues.push(...checkBestPractices(ast, code));
+        allIssues.push(...checkTodoComments(code));
+        allIssues.push(...checkPerformance(ast, code));
 
     } catch (error) {
         console.error(`Rule execution error in ${filePath}:`, error.message);

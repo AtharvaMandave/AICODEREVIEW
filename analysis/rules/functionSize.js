@@ -3,7 +3,7 @@
  */
 export const checkFunctionSize = (functions, code) => {
     const issues = [];
-    const MAX_LINES = 50;
+    const MAX_LINES = 200;
 
     for (const func of functions) {
         if (!func.loc) continue;
@@ -15,7 +15,7 @@ export const checkFunctionSize = (functions, code) => {
         if (lineCount > MAX_LINES) {
             issues.push({
                 category: 'maintainability',
-                severity: lineCount > 100 ? 'high' : 'medium',
+                severity: lineCount > 200 ? 'high' : 'medium',
                 title: `Function '${func.name}' is too long`,
                 description: `This function has ${lineCount} lines. Functions should ideally be under ${MAX_LINES} lines for better maintainability.`,
                 lineNumber: {

@@ -8,14 +8,15 @@ import {
     getProjectArchitecture,
     getProjectFiles
 } from '../controllers/project.controller.js';
+import { protect, optionalAuth } from '../middlewares/auth.js';
 
 const router = express.Router();
 
 /**
  * GET /api/projects
- * Get all projects
+ * Get all projects for the authenticated user
  */
-router.get('/', getAllProjects);
+router.get('/', optionalAuth, getAllProjects);
 
 /**
  * GET /api/projects/:id
